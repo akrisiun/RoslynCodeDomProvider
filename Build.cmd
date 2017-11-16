@@ -15,7 +15,12 @@ if not exist %MSBuild% (
   goto BuildFail
 )
 
-%MSBuild% "%~dp0\RoslynCodeProvider.msbuild" %logOptions% /v:minimal /maxcpucount /nodeReuse:false %*
+dotnet restore src\Microsoft.CodeDom.Providers.DotNetCompilerPlatform\DotNetCompilerPlatform.csproj 
+dotnet build   src\Microsoft.CodeDom.Providers.DotNetCompilerPlatform\DotNetCompilerPlatform.csproj 
+dotnet build   src\Microsoft.CodeDom.Providers.DotNetCompilerPlatform\DotNetCompilerPlatform.csproj -o ../../bin
+
+@REM %MSBuild% "%~dp0\RoslynCodeProvider.msbuild" %logOptions% /v:minimal /maxcpucount /nodeReuse:false %*
+
 if %ERRORLEVEL% neq 0 goto BuildFail
 goto BuildSuccess
 

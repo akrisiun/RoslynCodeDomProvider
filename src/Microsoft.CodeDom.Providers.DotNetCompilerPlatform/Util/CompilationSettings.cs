@@ -45,7 +45,6 @@ namespace Microsoft.CodeDom.Providers.DotNetCompilerPlatform {
         private const string CustomRoslynCompilerLocation = "ROSLYN_COMPILER_LOCATION";
 
         private static ICompilerSettings _csc;
-        private static ICompilerSettings _vb;
 
         static CompilationSettingsHelper() {
             var ttl = DefaultCompilerServerTTL;
@@ -74,13 +73,16 @@ namespace Microsoft.CodeDom.Providers.DotNetCompilerPlatform {
             var customRoslynCompilerLocation = Environment.GetEnvironmentVariable(CustomRoslynCompilerLocation, EnvironmentVariableTarget.Process);
             if(customRoslynCompilerLocation != null)
             {
+                var bin = @"c:\Work_Exe\prekesweb.v3\bin\roslyn";
+                if (!File.Exists($"{customRoslynCompilerLocation}\\csc.exe")
+                    && File.Exists($"{bin}\\csc.exe"))
+                    customRoslynCompilerLocation = bin;
+                
                 _csc = new CompilerSettings($"{customRoslynCompilerLocation}\\csc.exe", ttl);
-                _vb = new CompilerSettings($"{customRoslynCompilerLocation}\\vbc.exe", ttl);
             }
             else
             {
                 _csc = new CompilerSettings(CompilerFullPath(@"bin\roslyn\csc.exe"), ttl);
-                _vb = new CompilerSettings(CompilerFullPath(@"bin\roslyn\vbc.exe"), ttl);
             }
 
             if (isDebuggerAttached) {
@@ -91,12 +93,6 @@ namespace Microsoft.CodeDom.Providers.DotNetCompilerPlatform {
         public static ICompilerSettings CSC2 {
             get {
                 return _csc;
-            }
-        }
-
-        public static ICompilerSettings VBC2 {
-            get {
-                return _vb;
             }
         }
 
