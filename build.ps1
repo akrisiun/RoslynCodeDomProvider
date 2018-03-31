@@ -5,16 +5,25 @@
 # set EnableNuGetPackageRestore=true
 # set logOptions=/flp:Summary;Verbosity=normal;LogFile=msbuild.log /flp1:warningsonly;logfile=msbuild.wrn /flp2:errorsonly;logfile=msbuild.err
 
+# debian:
 # export MONO_OPTIONS="--debug"
 # export FrameworkPathOverride="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5"
 
 Write-host "OS $PSVersionTable.OS"
 Write-host "PWD: $pwd"
-if ($PSVersionTable.OS.Contains("Darwin")) {
-   $env:FrameworkPathOverride="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5"
+$OS = ""; 
+if (-not [string]::IsNullOrEmpty($PSVersionTable.OS)) {  $OS = $PSVersionTable.OS; }
+if (-not [string]::IsNullOrEmpty($env:windir) -and $env:windir.StartsWith("C:")) {
+   $OS = "Windows"; 
+}
+else {
+   if (-not [string]::IsNullOrEmpty($PSVersionTable.OS) -and $PSVersionTable.OS.Contains("Darwin")) {
+       $OS = "Darwin";
+       $env:FrameworkPathOverride="/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5"
+    }
 }
 
-if ($PSVersionTable.OS.Contains("Windows")) {
+if ($OS.Contains("Windows")) {
    # new-alias grep findstr
    dotnet --info | findstr RID 
 } else {
